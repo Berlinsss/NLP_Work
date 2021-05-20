@@ -20,15 +20,6 @@ ElementBGArray_Resize = {}
 ElementBGArray_IM = {}
 
 
-def upload_files():
-    selectFiles = filedialog.askopenfilenames()  # askopenfilename 1次上传1个；askopenfilenames1次上传多个
-    for File in selectFiles:
-        if File is not None:
-            with open(file=File, mode='r+', encoding='utf-8') as file:
-                file_text = file.read()
-                print(file_text)
-
-
 # Add your Varial Here: (Keep This Line of comments)
 # Define UI Class
 class Project1:
