@@ -119,6 +119,12 @@ class Project1:
         # Fun.AddElement(className, 'Button_10', Button_10)
         NoteBook_11 = tkinter.ttk.Notebook(root, cursor="spider")
         NoteBook_11.place(x=50, y=370, width=540, height=330)
+
+        def callback(event):
+            Page1.Page1(PageFrame_1, False)
+            Page2.Page2(PageFrame_2, False)
+        NoteBook_11.bind("<Button-1>", callback)
+
         PageFrame_1 = tkinter.ttk.Frame(NoteBook_11)
         PageFrame_1.place(x=55, y=395, width=530, height=300)
         Page1.Page1(PageFrame_1, False)

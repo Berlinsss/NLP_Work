@@ -4,6 +4,7 @@
 # import Page1_cmd
 # import Page1_sty
 # import Fun
+import os
 import tkinter
 from   tkinter import *
 import tkinter.ttk
@@ -51,8 +52,27 @@ class  Page1:
         #Add Some Logic Code Here: (Keep This Line of comments)
 
 
+        path = 'tea_answer.txt'
+        if os.path.exists(path):
+            with open(file=path, mode='r+', encoding='utf-8') as file:
+                data = file.read()
+                data_list = data.split('\n')
+                data_lists = [[]]
+
+            for i in range(0,len(data_list)):
+                data_lists.append(data_list[i].split('\t'))
+
+            del data_lists[0]
+
+            i = 0
+            for v in data_lists:
+                TreeView_2.insert('', i, values=(v[0], v[1]))
+                i += 1
+
+
 #Create the root of Kinter 
 if  __name__ == '__main__':
     root = tkinter.Tk()
     MyDlg = Page1(root)
     root.mainloop()
+
