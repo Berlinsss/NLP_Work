@@ -4,10 +4,12 @@
 # import Project1_cmd
 # import Project1_sty
 import datetime
+import OCR
 
 # import Fun
 import Page1
 import Page2
+import cv2 as CV2
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import *
@@ -31,12 +33,20 @@ class Project1:
             answer = file.split('\n')
             return answer
 
+        # 进行图片选择供后续OCR处理
+        def choosepic(file):
+            path = file
+            img = CV2.imread(path)
+            current_image = Image.fromarray(img)
+            imgtk = ImageTk.PhotoImage(image=current_image)
+
         def upload_file():
             global stu_answer
             print(ComboBox_6.get())
             if ComboBox_6.get() == "文本":
                 selectFile = filedialog.askopenfilename()  # askopenfilename 1次上传1个；askopenfilenames1次上传多个
                 if selectFile is not None:
+                    filepath.set(selectFile)
                     with open(file=selectFile, mode='r+', encoding='utf-8') as file:
                         stu_answer = read_file(file.read())
                         print(stu_answer)
@@ -44,17 +54,51 @@ class Project1:
                         Text_4.insert("end", "%s/%s/%s %s:%s" % (i.year, i.month, i.day, i.hour, i.minute) + "   上传" +
                                       "%s" % (ComboBox_6.get()) + "成功\n")
 
+            if ComboBox_6.get() == "图像":
+                selectFile = filedialog.askopenfilename()  # askopenfilename 1次上传1个；askopenfilenames1次上传多个
+                if selectFile is not None:
+                    filepath.set(selectFile)
+                    with open(file=selectFile, mode='r+', encoding='utf-8') as file:
+                        i = datetime.datetime.now()
+                        Text_4.insert("end", "%s/%s/%s %s:%s" % (i.year, i.month, i.day, i.hour, i.minute) + "   上传" +
+                                      "%s" % (ComboBox_6.get()) + " 成功\n\n")
+                        res = ''''''
+                        choosepic(selectFile)
+                        result = OCR.get_handwriting(selectFile, res)
+                        Text_4.insert("end", "%s/%s/%s %s:%s" % (i.year, i.month, i.day, i.hour, i.minute) + "   图片" +
+                                      "%s" % (filepath.get()) + " 识别结果为:" + result + '\n\n')
+                        stu_answer = read_file(result)
+                        print(stu_answer)
+
             if ComboBox_6.get() == "批量图像":
                 selectFiles = filedialog.askopenfilenames()  # askopenfilename 1次上传1个；askopenfilenames1次上传多个
                 for File in selectFiles:
                     if File is not None:
+                        filepath.set(File)
                         with open(file=File, mode='r+', encoding='utf-8') as file:
-                            file_text = file.read()
-                            print(file_text)
                             i = datetime.datetime.now()
                             Text_4.insert("end",
                                           "%s/%s/%s %s:%s" % (i.year, i.month, i.day, i.hour, i.minute) + "   上传" +
-                                          "%s" % (ComboBox_6.get()) + "成功\n")
+                                          "%s" % (ComboBox_6.get()) + " 成功\n\n")
+                            res = ''''''
+                            choosepic(File)
+                            result = OCR.get_handwriting(File, res)
+                            Text_4.insert("end",
+                                          "%s/%s/%s %s:%s" % (i.year, i.month, i.day, i.hour, i.minute) + "   图片" +
+                                          "%s" % (filepath.get()) + " 识别结果为:" + result + '\n' + '\n')
+                            stu_answer = read_file(result)
+                            print(stu_answer)
+
+        def upload_answer():
+            selectFile = filedialog.askopenfilename()  # askopenfilename 1次上传1个；askopenfilenames1次上传多个
+            if selectFile is not None:
+                filepath_2.set(selectFile)
+                with open(file=selectFile, mode='r+', encoding='utf-8') as file:
+                    stu_answer = read_file(file.read())
+                    print(stu_answer)
+                    i = datetime.datetime.now()
+                    Text_4.insert("end",
+                                  "%s/%s/%s %s:%s" % (i.year, i.month, i.day, i.hour, i.minute) + "   上传标准答案及评分细则成功\n")
 
         className = self.__class__.__name__
         # Fun.G_UIElementArray[className] = {}
@@ -99,7 +143,7 @@ class Project1:
         ComboBox_6.current(0)
         # Fun.AddElement(className, 'ComboBox_6', ComboBox_6)
         Button_7 = tkinter.Button(root, text="选择文件", width=10, height=4, command=upload_file)
-        Button_7.place(x=170, y=90, width=100, height=28)
+        Button_7.place(x=490, y=90, width=100, height=28)
         # Fun.AddElement(className, 'Button_7', Button_7)
 
         Label_8 = tkinter.Label(root, text="上传标准答案及评分细则", width=10, height=4)
@@ -108,8 +152,8 @@ class Project1:
                                        overstrike=0)
         Label_8.configure(font=Label_8_Ft)
         # Fun.AddElement(className, 'Label_8', Label_8)
-        Button_9 = tkinter.Button(root, text="选择文件", width=10, height=4)
-        Button_9.place(x=50, y=190, width=100, height=28)
+        Button_9 = tkinter.Button(root, text="选择文件", width=10, height=4, command=upload_answer)
+        Button_9.place(x=490, y=190, width=100, height=28)
         # Fun.AddElement(className, 'Button_9', Button_9)
         Button_10 = tkinter.Button(root, text="执行评分", width=10, height=4)
         Button_10.place(x=130, y=250, width=240, height=80)
@@ -143,7 +187,12 @@ class Project1:
         # Inital all element's Data
         # Fun.InitElementData(className)
         # Add Some Logic Code Here: (Keep This Line of comments)
-
+        filepath = tkinter.StringVar()
+        filepath_2 = tkinter.StringVar()
+        Entry_14 = Entry(root, state='readonly', text=filepath)
+        Entry_14.place(x=160,y=90 ,width=320,height=30)
+        Entry_15 = Entry(root, state='readonly', text=filepath_2)
+        Entry_15.place(x=50,y=190,width=430,height=30)
 
 # Create the root of Kinter
 if __name__ == '__main__':
