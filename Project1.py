@@ -27,6 +27,7 @@ ElementBGArray_IM = {}
 class Project1:
     def __init__(self, root, isTKroot=True):
         stu_answer = [] #全局变量：学生答案
+        tea_answer = []
 
         # 将上传文件按换行符切割，返回答案数组
         def read_file(file):
@@ -48,6 +49,7 @@ class Project1:
                 if selectFile is not None:
                     filepath.set(selectFile)
                     with open(file=selectFile, mode='r+', encoding='utf-8') as file:
+                        stu_answer.clear()
                         stu_answer = read_file(file.read())
                         print(stu_answer)
                         i = datetime.datetime.now()
@@ -67,6 +69,7 @@ class Project1:
                         result = OCR.get_handwriting(selectFile, res)
                         Text_4.insert("end", "%s/%s/%s %s:%s" % (i.year, i.month, i.day, i.hour, i.minute) + "   图片" +
                                       "%s" % (filepath.get()) + " 识别结果为:" + result + '\n\n')
+                        stu_answer.clear()
                         stu_answer = read_file(result)
                         print(stu_answer)
 
@@ -86,16 +89,19 @@ class Project1:
                             Text_4.insert("end",
                                           "%s/%s/%s %s:%s" % (i.year, i.month, i.day, i.hour, i.minute) + "   图片" +
                                           "%s" % (filepath.get()) + " 识别结果为:" + result + '\n' + '\n')
+                            stu_answer.clear()
                             stu_answer = read_file(result)
                             print(stu_answer)
 
         def upload_answer():
+            global tea_answer
             selectFile = filedialog.askopenfilename()  # askopenfilename 1次上传1个；askopenfilenames1次上传多个
             if selectFile is not None:
                 filepath_2.set(selectFile)
                 with open(file=selectFile, mode='r+', encoding='utf-8') as file:
-                    stu_answer = read_file(file.read())
-                    print(stu_answer)
+                    tea_answer.clear()
+                    tea_answer = read_file(file.read())
+                    print(tea_answer)
                     i = datetime.datetime.now()
                     Text_4.insert("end",
                                   "%s/%s/%s %s:%s" % (i.year, i.month, i.day, i.hour, i.minute) + "   上传标准答案及评分细则成功\n")
